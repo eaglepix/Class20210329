@@ -6,6 +6,7 @@ const getConnection = () => {
     return require('../../app');
 }
 const numCustomer = 10; //SQL to extract number of customers
+var currPage;
 
 function getJSON(numCustomer) {
     return new Promise(resolve => {
@@ -31,14 +32,29 @@ function getJSON(numCustomer) {
     });
 };
 
-async function asyncCall(nav, req, res, option) {
+async function asyncCall(nav, req, res, option, numCustomer) {
     console.log('calling getJSON()');
 
     if (option == 1) {
         const faceLinkArray = await getJSON(numCustomer);
         console.log('async', faceLinkArray);
+
+        let pgNum;
+        debug(req.params);
+        console.log('req.params',req.params);
+        if ( Object.keys(req.params).length === 0 ) {
+            console.log('req.param is null');
+            pgNum = 1;
+        } else {
+            pgNum = req.params.pgNum;
+            console.log('pgNum',pgNum);
+        }
+        currPage = Number(pgNum);
+        console.log('currPage',currPage);
+        offsetNum = (currPage-1)*numCustomer;
+
         // example: query(sqlString, callback)
-        getConnection().query(`SELECT * from customers LIMIT ${numCustomer}`, (err, result) => {
+        await getConnection().query(`SELECT * from customers LIMIT ${numCustomer} OFFSET ${offsetNum}`, (err, result) => {
             // connection.release(); // When done with the connection, release it.
             debug(result);
             let contactName = new Array();
@@ -56,28 +72,31 @@ async function asyncCall(nav, req, res, option) {
             res.render('bookListView',
                 {
                     nav,
-                    title: 'SQL Top 10 Customer List',
+                    title: 'SQL Customer List',
+                    pageNum: currPage,
                     length: result.length,
                     customerName,
                     contactName,
                     city,
                     customerNumber,
                     picture: faceLinkArray,
-                    link: '/books/'
+                    link: '/books/indv/'
                 });
         });
+
     } else if (option == 2) {
         const numCustomer = 1;
         const faceLinkArray = await getJSON(numCustomer);
         console.log('async', faceLinkArray);
 
+        console.log('currPage', currPage);
         debug(req.params);
         const { customerNumber } = req.params;
         // const { id } = req.params;
         // connection.input('customerNumber', customerNumber)
         // .query(`SELECT * from customers WHERE customerNumber=@customerNumber}`, (err, result) => {
         // example: query(sqlString, callback)
-        getConnection().query('SELECT * from customers WHERE customerNumber= ?', [customerNumber], (err, result) => {
+        await getConnection().query('SELECT * from customers WHERE customerNumber=?', [customerNumber], (err, result) => {
             // getConnection().query(`SELECT * from customers WHERE customerNumber=${customerNumber}`, (err, result) => {
             console.log('Result:', result[0]);
             console.log(result[0].customerName);
@@ -87,6 +106,7 @@ async function asyncCall(nav, req, res, option) {
             res.render('bookView',
                 {
                     nav,
+                    pageNum: currPage,
                     title: 'Individual Customer List',
                     customerName,
                     contactName,
@@ -104,6 +124,8 @@ async function asyncCall(nav, req, res, option) {
 };
 
 function router(nav) {
+    let offsetNum;
+
     bookRouter.use((req, res, next) => {
         if (req.user) {
             next();
@@ -113,13 +135,21 @@ function router(nav) {
     });
 
     bookRouter.route('/').get((req, res) => {
-        asyncCall(nav, req, res, 1);
+        asyncCall(nav, req, res, 1, numCustomer);
     });
-    bookRouter.route('/:customerNumber')
+    bookRouter.route('/indv/:customerNumber')
         // .all((req,res,next) =>{})    to inject middleware if want
         .get((req, res) => {
-            asyncCall(nav, req, res, 2);
+            asyncCall(nav, req, res, 2, numCustomer);
         });
+
+    bookRouter.route('/:pgNum')
+        // .all((req,res,next) =>{})    to inject middleware if want
+        .get((req, res) => {
+            asyncCall(nav, req, res, 1, numCustomer);
+        });
+
+
     return bookRouter;
 };
 
