@@ -107,7 +107,8 @@ async function asyncCall(bookService, nav, req, res, option) {
                         title: 'Individual Book Details',
                         customerName: title,
                         contactName: author,
-                        pageNum: 1,
+                        database: 'MongoDB',
+                        pageNum: '',
                         comm1: `Genre: ${genre}`,
                         comm2: `URL: ${libraryAPI.link}`,
                         comm3: `First Published Year: ${libraryAPI.first_publish_year}`,
@@ -118,8 +119,6 @@ async function asyncCall(bookService, nav, req, res, option) {
                         // picture: `http://covers.openlibrary.org/b/olid/${book.desc.bookCover}-L.jpg`,
                         // picture: faceLinkArray[0],
                     });
-
-
 
             } catch (err) {
                 debug(err.stack);

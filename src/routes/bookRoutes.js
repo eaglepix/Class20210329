@@ -106,6 +106,7 @@ async function asyncCall(nav, req, res, option, numCustomer) {
             res.render('bookView',
                 {
                     nav,
+                    database: 'books',
                     pageNum: currPage,
                     title: 'Individual Customer List',
                     customerName,
