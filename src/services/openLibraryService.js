@@ -23,10 +23,10 @@ function libraryService() {
 
             // Setting up query string
             const titleQuery = title.split(' ').join('+');
-            debug('titleQuery:', titleQuery);
+            // debug('titleQuery:', titleQuery);
             axios.get(`https://openlibrary.org/search.json?title=${titleQuery}`)
                 .then((titleResponse) => {
-                    debug('titleResponse', titleResponse);
+                    debug('titleResponse..........:::::', titleResponse.data);
                     const titleOlid = titleResponse.data.docs[0].key;
 
                     //Original Module

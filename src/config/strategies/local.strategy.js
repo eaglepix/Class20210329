@@ -20,23 +20,6 @@ module.exports = function localStrategy() {
                 const db = client.db(dbName);
                 const col = db.collection('users');
 
-                // await col.findOne({ username: username }, function (err, user) {
-                //     debug(user);
-                //     console.log('user', user);
-                //     if (err) { return done(err); }
-                //     if (!user) {
-                //         return done(null, false, { message: 'Incorrect username.' });
-                //     }
-                //     console.log("Validate password", user.validPassword);
-
-                //     if (!user.validPassword) {
-                //         return done(null, false, { message: 'Incorrect password.' });
-                //     }
-                //     return done(null, user);
-                // });
-                // // Close connection
-                // client.close();
-
                 const user = await col.findOne({ username });
                 debug(user);
                 if (user === null) {
@@ -46,20 +29,8 @@ module.exports = function localStrategy() {
                 } else {
                     return done(null, false, { message: 'Incorrect password.' });
                 };
-                client.close();
-
-
-                // const user = await col.findOne({ username });
-                // if (user.password === password) {
-                //     done(null, user);
-                // } else {
-                //     done(null, false);
-                // }
-                // } catch (err) {
-                //     console.log(err.stack);
-                // }
                 // Close connection
-                // client.close();
+                client.close();
             }
                 ());
         }));

@@ -60,11 +60,18 @@
         <%=title%>
       </h1>
     </div>
-    <div>
-      <h4 class="text-center">Page <%=pageNum%>
-        <a href="/books/<%=pageNum+1%>" class="btn btn-success float-right">Next Page></a>
-      </h4>
-    </div>
+    <%if(title=="SQL Customer List") { %>
+      <div>
+          <h4 >
+            <%if(pageNum>1) { %>
+              <a href="/books/<%=pageNum-1%>" class="btn btn-success float-left">< Previous Page</a>
+              <%} %>
+              <p class="text-center"><strong>Page <%=pageNum%></strong>
+              <a href="/books/<%=pageNum+1%>" class="btn btn-success float-right">Next Page ></a>
+            </p>
+            </h4>
+      </div>
+      <%} %>
   </div>
 
 
@@ -94,7 +101,19 @@
       </div>
       <%}%>
         <!--/stories-->
-        <a href="/books/<%=pageNum+1%>" class="btn btn-success float-right m-3">Next Page</a>
+        <%if(title=="SQL Customer List") { %>
+          <div>
+              <h4 >
+                <%if(pageNum>1) { %>
+                  <a href="/books/<%=pageNum-1%>" class="btn btn-success float-left">< Previous Page</a>
+                  <%} %>
+                  <p class="text-center"><strong>Page <%=pageNum%></strong>
+                  <a href="/books/<%=pageNum+1%>" class="btn btn-success float-right">Next Page ></a>
+                </p>
+                </h4>
+          </div>
+          <%} %>
+            <!-- <a href="/books/<%=pageNum+1%>" class="btn btn-success float-right m-3">Next Page</a> -->
   </div>
 
   <br>
